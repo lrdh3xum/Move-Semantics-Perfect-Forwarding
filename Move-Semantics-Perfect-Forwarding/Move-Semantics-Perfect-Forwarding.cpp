@@ -52,15 +52,47 @@
 	because the return will fall off. Modifying an object that is about
 	to disappear is dangerous.
 */
-std::string getName() { return "Foo"; }
+std::string getName() { return "Lorem"; }
 
 /*
 	lvalue reference will accept any argument that it is given.
 	rvalue reference will not except mutable rvalue references.
 */
-std::string printRefL(const std::string& str) { std::cout << str; }
-std::string printRefR(std::string&& str) { std::cout << str; }
+void printRefL(const std::string& str) { std::cout << str; }
+void printRefR(std::string&& str) { std::cout << str; }
 
+
+class ArrayWrapper
+{
+
+private:
+
+	int* _p_vals;
+	int _size;
+
+public:
+
+	ArrayWrapper(int n) : _p_vals(new int[n]), _size (n){}
+
+	// Copy constructor.
+	ArrayWrapper(const ArrayWrapper& other) : _p_vals(new int[other._size]), _size(other._size)
+	{
+		for (int i = 0; i < _size; i++)
+		{
+			_p_vals[i] = other._p_vals[i];
+		}
+	}
+
+	~ArrayWrapper()
+	{
+		delete[] _p_vals;
+	}
+
+};
+
+// Overloaded
+void printReference(const std::string& str) { std::cout << "Overloaded: " << str << "\n"; }
+void printReference(std::string&& str) { std::cout << str << "\n\n"; }
 
 int main()
 {
@@ -78,6 +110,12 @@ int main()
 	rname = "Bar";
 	std::cout << rname << "\n\n";
 
+	std::string aString("Foo");
+	// Calls first printRef, lvalue reference. Crash if passed getName.
+	printReference(aString);
+	// Calls second printRef, mutable rvalue reference. Can also pass aString.
+	printReference(getName());
+	
 
 
 }
